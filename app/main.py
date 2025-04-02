@@ -110,13 +110,15 @@ async def get_voices(model: str = "ssfm-v21") -> dict:
 
 
 @mcp.tool("text_to_speech", "Convert text to speech using the specified voice and parameters")
-async def text_to_speech(voice_id: str, text: str, model: str) -> str:
+async def text_to_speech(voice_id: str, text: str, model: str, emotion_preset: str = EmotionPreset.NORMAL, emotion_intensity: float = 1.0) -> str:
     """Convert text to speech using the specified voice and parameters
 
     Args:
         voice_id: ID of the voice to use
         text: Text to convert to speech
         model: TTS model to use
+        emotion_preset: Emotion preset to use
+        emotion_intensity: Emotion intensity to use
 
     Returns:
         Path to the saved audio file
@@ -125,11 +127,26 @@ async def text_to_speech(voice_id: str, text: str, model: str) -> str:
     if not OUTPUT_DIR.exists():
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    headers = {
+        "X-API-KEY": API_KEY,
+    }
+    prompt = {
+        "emotion_preset": emotion_preset,
+        "emotion_intensity": emotion_intensity,
+    }
+    payload = {
+        "voice_id": voice_id,
+        "text": text,
+        "model": model,
+        "prompt": prompt,
+    }
+
     async with httpx.AsyncClient() as client:
-        headers = {
-            "X-API-KEY": API_KEY,
-        }
-        response = await client.post(f"{API_HOST}/v1/text-to-speech", json={"voice_id": voice_id, "text": text, "model": model}, headers=headers)
+        response = await client.post(
+            f"{API_HOST}/v1/text-to-speech",
+            json=payload,
+            headers=headers,
+        )
         if response.status_code != 200:
             raise Exception(f"Failed to generate speech: {response.status_code}, {response.text}")
 
@@ -165,5 +182,9 @@ async def play_audio(file_path: str) -> str:
         return f"Failed to play audio file: {str(e)}"
 
 
-if __name__ == "__main__":
+def main():
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()
