@@ -49,15 +49,8 @@ class EmotionEnum(str, Enum):
     TONEDOWN = "tonedown"
 
 
-class EmotionPreset(str, Enum):
-    HAPPY = "happy"
-    SAD = "sad"
-    NORMAL = "normal"
-    ANGRY = "angry"
-
-
 class Prompt(BaseModel):
-    emotion_preset: EmotionPreset = Field(default=EmotionPreset.NORMAL, description="Emotion preset type")
+    emotion_preset: EmotionEnum = Field(default=EmotionEnum.NORMAL, description="Emotion preset type")
     emotion_intensity: float = Field(default=1.0, description="Intensity of the emotion", ge=0.0, le=2.0)
 
 
@@ -105,30 +98,49 @@ async def get_voices(model: str = TTSModel.SSFM_V21.value) -> dict:
 
 
 @app.tool("text_to_speech", "Convert text to speech using the specified voice and parameters")
-async def text_to_speech(voice_id: str, text: str, model: str, prompt: Prompt | None = None, output: Output | None = None) -> str:
+async def text_to_speech(
+    voice_id: str,
+    text: str,
+    model: str,
+    emotion_preset: str = EmotionEnum.NORMAL.value,
+    emotion_intensity: float = 1.0,
+    volume: int = 100,
+    audio_pitch: int = 0,
+    audio_tempo: float = 1.0,
+    audio_format: str = "wav",
+) -> str:
     """Convert text to speech using the specified voice and parameters
 
     Args:
         voice_id: ID of the voice to use
         text: Text to convert to speech
         model: TTS model to use
-        prompt: Prompt configuration for speech generation
-        output: Output audio configuration
+        emotion_preset: Emotion preset type (default: normal)
+        emotion_intensity: Intensity of the emotion, between 0.0 and 2.0 (default: 1.0)
+        volume: Audio volume level, between 0 and 200 (default: 100)
+        audio_pitch: Audio pitch adjustment, between -12 and 12 (default: 0)
+        audio_tempo: Audio playback speed, between 0.5 and 2.0 (default: 1.0)
+        audio_format: Audio format, either 'wav' or 'mp3' (default: wav)
 
     Returns:
         Path to the saved audio file
     """
-
     if not OUTPUT_DIR.exists():
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Pydantic 모델을 사용하여 자동 검증
+    prompt_model = Prompt(emotion_preset=emotion_preset, emotion_intensity=emotion_intensity)
+    output_model = Output(volume=volume, audio_pitch=audio_pitch, audio_tempo=audio_tempo, audio_format=audio_format)
+    request = TTSRequest(voice_id=voice_id, text=text, model=model, prompt=prompt_model, output=output_model)  # TTSModel 검증은 Pydantic이 자동으로 처리
+
     headers = {
         "X-API-KEY": API_KEY,
     }
-    payload = TTSRequest(voice_id=voice_id, text=text, model=model, prompt=prompt, output=output).model_dump(exclude_none=True)
+
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"{API_HOST}/v1/text-to-speech",
-            json=payload,
+            json=request.model_dump(exclude_none=True),
             headers=headers,
         )
         if response.status_code != 200:
