@@ -146,7 +146,7 @@ async def text_to_speech(
         if response.status_code != 200:
             raise Exception(f"Failed to generate speech: {response.status_code}, {response.text}")
 
-        output_path = OUTPUT_DIR / f"{voice_id}_{datetime.now().strftime('%Y%m%d-%H%M%S')}_{text[:10]}.wav"
+        output_path = OUTPUT_DIR / f"{datetime.now().strftime('%Y%m%d-%H%M%S')}_{voice_id}_{text[:10]}.wav"
         output_path.write_bytes(response.content)
 
         return str(output_path)
