@@ -2,17 +2,10 @@
 name = "typecast-api-mcp-server"
 version = "0.1.0"
 description = "MCP Server for typecast-api"
-authors = [
-    { name = "Hyunseung Lee", email = "hyunseung@neosapience.com" }
-]
+authors = [{ name = "Hyunseung Lee", email = "hyunseung@neosapience.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "mcp",
-    "httpx",
-    "sounddevice",
-    "soundfile",
-]
+dependencies = ["mcp", "httpx", "sounddevice", "soundfile", "click"]
 
 [build-system]
 requires = ["hatchling"]
@@ -24,9 +17,8 @@ typecast-api-mcp-server = "app.main:main"
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
 
+[dependency-groups]
+dev = ["mcp[cli]>=1.6.0"]
+
 [tool.hatch.build]
-include = [
-    "app/**/*.py",
-    "README.md",
-    "LICENSE",
-]
+include = ["app/**/*.py", "README.md", "LICENSE"]
