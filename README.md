@@ -4,7 +4,7 @@ MCP Server for typecast-api, enabling seamless integration with MCP clients. Thi
 
 ## About
 
-이 프로젝트는 Typecast API를 위한 Model Context Protocol 서버를 구현하여, MCP 클라이언트가 표준화된 방식으로 Typecast API와 상호작용할 수 있도록 합니다.
+This project implements a Model [Context Protocol server](https://modelcontextprotocol.io/introduction) for Typecast API, allowing MCP clients to interact with the Typecast API in a standardized way.
 
 ## Feature Implementation Status
 
@@ -17,22 +17,28 @@ MCP Server for typecast-api, enabling seamless integration with MCP clients. Thi
 
 ## Setup
 
-### Dependencies
-
-이 프로젝트는 Python 3.10 이상이 필요하며, `uv`를 사용하여 패키지를 관리합니다.
-
-#### 패키지 설치
+### Git Clone
 
 ```bash
-# 가상 환경 생성 및 패키지 설치
+git clone https://github.com/hyunseung/typecast-api-mcp-server-sample.git
+cd typecast-api-mcp-server-sample
+```
+
+### Dependencies
+
+This project requires Python 3.10 or higher and uses `uv` for package management.
+
+#### Package Installation
+
+```bash
+# Create virtual environment and install packages
 uv venv
 uv pip install -e .
-
 ```
 
 ### Environment Variables
 
-다음 환경 변수를 설정하세요:
+Set the following environment variables:
 
 ```bash
 TYPECAST_API_HOST=https://api.typecast.ai
@@ -42,9 +48,9 @@ TYPECAST_OUTPUT_DIR=<your-output-directory> # default: ~/Downloads/typecast_outp
 
 ### Usage with Claude Desktop
 
-`claude_desktop_config.json`에 다음과 같이 추가할 수 있습니다:
+You can add the following to your `claude_desktop_config.json`:
 
-#### 기본 설정:
+#### Basic Configuration:
 
 ```json
 {
@@ -67,11 +73,11 @@ TYPECAST_OUTPUT_DIR=<your-output-directory> # default: ~/Downloads/typecast_outp
 }
 ```
 
-`/PATH/TO/YOUR/PROJECT`를 실제 프로젝트가 위치한 경로로 변경하세요.
+Replace `/PATH/TO/YOUR/PROJECT` with the actual path where your project is located.
 
 ### Manual Execution
 
-서버를 수동으로 실행할 수도 있습니다:
+You can also run the server manually:
 
 ```bash
 uv run python app/main.py
@@ -79,7 +85,7 @@ uv run python app/main.py
 
 ## Contributing
 
-기여는 언제나 환영합니다! Pull Request를 자유롭게 제출해주세요.
+Contributions are always welcome! Feel free to submit a Pull Request.
 
 ## License
 
